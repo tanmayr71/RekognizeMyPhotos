@@ -16,8 +16,8 @@ phases:
       - echo Building Lambda function 1...
       - cd lambda/lf1
       - pip install -r requirements.txt -t ./
-      - zip -r ../lambda_function_1_v2.zip *
-      - aws s3 cp ../lambda_function_1_v2.zip s3://$LAMBDA_BUCKET
+      - zip -r ../lambda_function_1.zip *
+      - aws s3 cp ../lambda_function_1.zip s3://$LAMBDA_BUCKET
       - cd ../lf2
       - pip install -r requirements.txt -t ./
       - zip -r ../lambda_function_2.zip *
@@ -25,7 +25,6 @@ phases:
 
 artifacts:
   files:
-    - lambda/lambda_function_1_v2.zip
+    - lambda/lambda_function_1.zip
     - lambda/lambda_function_2.zip
-    - other/cloudFormation.yml
 
