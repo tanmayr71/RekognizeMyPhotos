@@ -18,14 +18,14 @@ function searchPhoto() {
         .then(function (res) {
             var resp_data = res.data;
             console.log(resp_data)
-            if (resp_data.results == "No Results found") {
+            if (resp_data.imagePaths == "No Results found") {
                 document.getElementById('displaytext').innerHTML =
                     'Sorry could not find the image. Try another search words!';
                 document.getElementById('displaytext').style.display = 'block';
             }
 
 
-            resp_data.results.forEach(function (obj) {
+            resp_data.imagePaths.forEach(function (obj) {
                 var img = new Image();
                 console.log(obj);
                 img.src = obj;
