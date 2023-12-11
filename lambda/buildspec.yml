@@ -24,6 +24,6 @@ phases:
   post_build:
     commands:
       - echo Updating Lambda functions...
-      - aws lambda update-function-code --function-name IndexPhotosFunction --s3-bucket $b1-cdpipe --s3-key lambda_function_1.zip
-      - aws lambda update-function-code --function-name SearchPhotosFunction --s3-bucket $b1-cdpipe --s3-key lambda_function_2.zip
+      - aws lambda update-function-code --function-name IndexPhotosFunction --s3-bucket b1-cdpipe --s3-key lambda_function_1.zip
+      - aws lambda update-function-code --function-name SearchPhotosFunction --s3-bucket b1-cdpipe --s3-key lambda_function_2.zip
 
