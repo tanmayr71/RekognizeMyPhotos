@@ -15,11 +15,9 @@ phases:
       - ls
       - echo Building Lambda function 1...
       - cd lambda/lf1
-      - pip install -r requirements.txt -t ./
       - zip -r ../lambda_function_1.zip *
       - aws s3 cp ../lambda_function_1.zip s3://$LAMBDA_BUCKET
       - cd ../lf2
-      - pip install -r requirements.txt -t ./
       - zip -r ../lambda_function_2.zip *
       - aws s3 cp ../lambda_function_2.zip s3://$LAMBDA_BUCKET
 
@@ -28,9 +26,4 @@ phases:
       - echo Updating Lambda functions...
       - aws lambda update-function-code --function-name IndexPhotosFunction --s3-bucket $LAMBDA_BUCKET --s3-key lambda_function_1.zip
       - aws lambda update-function-code --function-name SearchPhotosFunction --s3-bucket $LAMBDA_BUCKET --s3-key lambda_function_2.zip
-
-artifacts:
-  files:
-    - lambda/lambda_function_1.zip
-    - lambda/lambda_function_2.zip
 
