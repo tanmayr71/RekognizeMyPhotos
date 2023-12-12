@@ -23,7 +23,8 @@ function searchPhoto() {
                 document.getElementById('displaytext').style.display = 'block';
             }
 
-
+            document.getElementById('img-container').innerHTML = '';
+            
             resp_data.imagePaths.forEach(function (obj) {
                 // Make a GET request to the S3 URL
                 fetch(obj)
