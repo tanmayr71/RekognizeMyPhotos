@@ -6,14 +6,19 @@ Resources:
   PhotoBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: "photobucket-assignment"
+      BucketName: "photobucket-assignmentt"
+
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "frontend-buckett"
 
   # Elasticsearch Domain
   ElasticsearchDomain:
     Type: AWS::Elasticsearch::Domain
     Properties:
       ElasticsearchVersion: "7.1"
-      DomainName: "myes-album"
+      DomainName: "myes-albumttt"
       EBSOptions:
         EBSEnabled: true
         VolumeSize: 10 # Specify the volume size required for your use case.
@@ -42,10 +47,10 @@ Resources:
                 Resource: '*'
 
   # Lambda Functions
-  IndexPhotosFunction1:
+  IndexPhotosFunction11:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: "IndexPhotosFunction1"
+      FunctionName: "IndexPhotosFunction11"
       Runtime: "python3.11"
       Handler: "index.handler"
       Code:
@@ -53,10 +58,10 @@ Resources:
         S3Key: "lambda_function_1.zip"
       Role: !GetAtt LambdaExecutionRole.Arn
 
-  SearchPhotosFunction1:
+  SearchPhotosFunction11:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: "SearchPhotosFunction1"
+      FunctionName: "SearchPhotosFunction11"
       Runtime: "python3.11"
       Handler: "search.handler"
       Code:
@@ -65,45 +70,61 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
 
   # API Gateway
-  AssignmentPhotoAPI:
+  AssignmentPhotoAPII:
     Type: AWS::ApiGateway::RestApi
     Properties:
-      Name: "AssignmentPhotoAPI"
+      Name: "AssignmentPhotoAPII"
       Description: "API for photo album application"
 
   # /search resource
   SearchResource:
     Type: AWS::ApiGateway::Resource
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
-      ParentId: !GetAtt AssignmentPhotoAPI.RootResourceId
+      RestApiId: !Ref AssignmentPhotoAPII
+      ParentId: !GetAtt AssignmentPhotoAPII.RootResourceId
       PathPart: search
 
   # GET method on /search
   SearchGETMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ResourceId: !Ref SearchResource
       HttpMethod: GET
       AuthorizationType: NONE
       Integration:
         Type: AWS_PROXY
         IntegrationHttpMethod: POST
-        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchPhotosFunction1.Arn}/invocations"
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchPhotosFunction11.Arn}/invocations"
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: ""
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: "Empty"
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Origin: true
 
   # OPTIONS method on /search
   SearchOPTIONSMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ResourceId: !Ref SearchResource
       HttpMethod: OPTIONS
       AuthorizationType: NONE
       Integration:
-        Type: MOCK
-        RequestTemplates:
-          application/json: '{"statusCode": 200}'
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SearchPhotosFunction11.Arn}/invocations"
         IntegrationResponses:
           - StatusCode: 200
             ResponseTemplates:
@@ -125,15 +146,15 @@ Resources:
   UploadResource:
     Type: AWS::ApiGateway::Resource
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
-      ParentId: !GetAtt AssignmentPhotoAPI.RootResourceId
+      RestApiId: !Ref AssignmentPhotoAPII
+      ParentId: !GetAtt AssignmentPhotoAPII.RootResourceId
       PathPart: upload
 
   # OPTIONS method on /upload
   UploadOPTIONSMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ResourceId: !Ref UploadResource
       HttpMethod: OPTIONS
       AuthorizationType: NONE
@@ -162,7 +183,7 @@ Resources:
   ObjectResource:
     Type: AWS::ApiGateway::Resource
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ParentId: !Ref UploadResource
       PathPart: '{object}'
 
@@ -171,7 +192,7 @@ Resources:
   ObjectPUTMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ResourceId: !Ref ObjectResource
       HttpMethod: PUT
       AuthorizationType: NONE
@@ -192,7 +213,7 @@ Resources:
   ObjectOPTIONSMethod:
     Type: AWS::ApiGateway::Method
     Properties:
-      RestApiId: !Ref AssignmentPhotoAPI
+      RestApiId: !Ref AssignmentPhotoAPII
       ResourceId: !Ref ObjectResource
       HttpMethod: OPTIONS
       AuthorizationType: NONE
@@ -217,13 +238,15 @@ Resources:
             method.response.header.Access-Control-Allow-Headers: true
             method.response.header.Access-Control-Allow-Origin: true
 Outputs:
+  FrontendBucketName:
+    Value: !Ref FrontendBucket
   PhotoBucketName:
     Value: !Ref PhotoBucket
   ElasticsearchDomainEndpoint:
     Value: !GetAtt ElasticsearchDomain.DomainEndpoint
-  IndexPhotosFunction1Arn:
-    Value: !GetAtt IndexPhotosFunction1.Arn
-  SearchPhotosFunction1Arn:
-    Value: !GetAtt SearchPhotosFunction1.Arn
+  IndexPhotosFunction11Arn:
+    Value: !GetAtt IndexPhotosFunction11.Arn
+  SearchPhotosFunction11Arn:
+    Value: !GetAtt SearchPhotosFunction11.Arn
   AssignmentPhotoAPIUrl:
-    Value: !Sub "https://${AssignmentPhotoAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Value: !Sub "https://${AssignmentPhotoAPII}.execute-api.${AWS::Region}.amazonaws.com/Prod"
